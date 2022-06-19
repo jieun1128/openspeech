@@ -54,9 +54,9 @@ class LightningKsponSpeechDataModule(pl.LightningDataModule):
     Args:
         configs (DictConfig): configuration set.
     """
-    KSPONSPEECH_TRAIN_NUM = 620000
-    KSPONSPEECH_VALID_NUM = 2545
-    KSPONSPEECH_TEST_NUM = 6000
+    KSPONSPEECH_TRAIN_NUM = 580000
+    KSPONSPEECH_VALID_NUM = 20000
+    KSPONSPEECH_TEST_NUM = 20000
 
     def __init__(self, configs: DictConfig) -> None:
         super(LightningKsponSpeechDataModule, self).__init__()
@@ -143,19 +143,19 @@ class LightningKsponSpeechDataModule(pl.LightningDataModule):
             None
         """
         valid_end_idx = self.KSPONSPEECH_TRAIN_NUM + self.KSPONSPEECH_VALID_NUM
+        test_end_idx = valid_end_idx + self.KSPONSPEECH_TEST_NUM
 
         audio_paths, transcripts = self._parse_manifest_file()
         audio_paths = {
             "train": audio_paths[:self.KSPONSPEECH_TRAIN_NUM],
             "valid": audio_paths[self.KSPONSPEECH_TRAIN_NUM:valid_end_idx],
-            "test": audio_paths[valid_end_idx:],
+            "test": audio_paths[valid_end_idx:test_end_idx],
         }
         transcripts = {
             "train": transcripts[:self.KSPONSPEECH_TRAIN_NUM],
             "valid": transcripts[self.KSPONSPEECH_TRAIN_NUM:valid_end_idx],
-            "test": transcripts[valid_end_idx:],
+            "test": transcripts[valid_end_idx:test_end_idx],
         }
-
         for stage in audio_paths.keys():
             if stage == 'test':
                 dataset_path = self.configs.dataset.test_dataset_path
